@@ -1,0 +1,36 @@
+.home-sidebar {
+  width: 240px;
+  background-color: #121212;
+  color: #ffffff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-left:1vh;
+  margin-right: 1vh;
+  margin-top: 1vh;
+  border-radius: 1vh;
+}
+
+.home-sidebar__option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.home-sidebar__option:hover {
+  background-color: #333333;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.home-sidebar__option span {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}

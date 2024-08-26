@@ -1,0 +1,29 @@
+.user-content-item {
+  background-color: #121212;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.user-content-item:hover {
+  background-color: #333333;
+}
+
+.user-content-image {
+  width: 30vh;
+  height: 30vh;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.user-content-item h3 {
+  margin: 10px 0 5px;
+  font-size: 16px;
+}
+
+.user-content-item p {
+  font-size: 14px;
+  color: #b3b3b3;
+}

@@ -1,0 +1,95 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #121212;
+  color: white;
+  margin-top: 1vh;
+  margin-left: 1vh;
+  margin-right: 1vh;
+  border-radius: 1vh;
+}
+
+.header__logo {
+  height: 40px;
+  width: 40px;
+}
+
+.header__search {
+  display: flex;
+  align-items: center;
+  background-color: #2A2A2A;
+  border-radius: 50px;
+  padding: 5px 10px;
+}
+
+
+.header__search input {
+  
+  margin-left: 10px;
+  background: #2A2A2A;
+  color:white
+}
+
+.header__search input:focus {
+  border: none;
+  outline: none; /* Optional: Remove the default outline as well */
+}
+
+.header__profile {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+.header__signupButton {
+  background: none;
+  border: none;
+  color: white;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.header__loginButton {
+  background-color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 5px 15px;
+  cursor: pointer;
+}
+
+
+.header__dropdown {
+  position: absolute;
+  top: 50px; /* Adjust based on your layout */
+  right: 0;
+  background-color: #282828; /* Dark background color */
+  border: 1px solid #404040; /* Slightly lighter border */
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Darker shadow */
+  padding: 12px; /* Increased padding for more space */
+  z-index: 1000;
+  min-width: 150px; /* Increased width */
+}
+
+.header__dropdown button {
+  display: block;
+  background: none;
+  border: none;
+  color: #b3b3b3; /* Light grey text */
+  padding: 12px 16px; /* Increased padding for larger clickable area */
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px; /* Adjust based on your design */
+  border-radius: 4px; /* Optional: Rounded corners for buttons */
+}
+
+.header__dropdown button:hover {
+  background-color: #404040; /* Darker grey on hover */
+  color: #ffffff; /* White text on hover */
+}
+
+

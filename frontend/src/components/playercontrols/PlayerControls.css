@@ -1,0 +1,64 @@
+/* PlayerControls.css */
+.song-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+}
+
+.album-art {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.song-info {
+  flex: 1;
+}
+
+.song-info h3, .song-info p {
+  margin: 0;
+}
+
+.controls, .additional-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw;
+}
+
+.control-icon {
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+  width: 100%;
+}
+
+.volume-slider {
+  width: 100px;
+  margin: 0 10px;
+}
+
+.mid-section{
+  width:40%;
+}
+
+/* PlayerControls.css */
+
+.control-icon.active {
+  color: green; /* Change this to any color you like */
+}
+
+.left-section {
+  display: flex;
+  flex-direction: row ;
+  justify-content: space-around;
+}

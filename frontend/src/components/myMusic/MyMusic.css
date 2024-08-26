@@ -1,0 +1,116 @@
+/* Container styling for the component */
+.my-music-container {
+  padding: 20px;
+  height: 90vh;
+  width: 100%;
+  border-radius: 1vh;
+  margin-top: 1vh;
+  margin-right: 1vh;
+  background-color: #121212;
+  color: #ffffff;
+  overflow-y: auto;
+  margin-bottom: 10vh;
+}
+
+/* Dark-themed input styling */
+.input-dark {
+  background-color: #121212;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.input-dark::placeholder {
+  color: #b0bec5;
+}
+
+/* Styling for uploaded songs */
+.uploaded-songs {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.uploaded-song {
+  margin: 10px;
+}
+
+.uploaded-song img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+}
+
+/* Genre chip styling */
+.genre-chip {
+  margin-right: 5px;
+}
+
+/* Form elements */
+.my-music-form button {
+  margin-top: 15px;
+  background-color: chartreuse;
+  color: white;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.my-music-form {
+  margin-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.my-music-form input,
+.my-music-form textarea,
+.my-music-form select {
+  width: 60%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .my-music-form input,
+  .my-music-form textarea,
+  .my-music-form select {
+    width: 80%;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-music-form input,
+  .my-music-form textarea,
+  .my-music-form select {
+    width: 100%;
+  }
+}
+
+.display-genre {
+  margin-bottom: 10px;
+}
+
+/* Custom scrollbar styling */
+.my-music-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.my-music-container::-webkit-scrollbar-track {
+  background: #1d1d1d;
+}
+
+.my-music-container::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 10px;
+  border: 3px solid #1d1d1d;
+}
+
+.my-music-container::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+}
+
+.my-music-container {
+  scrollbar-width: thin;
+  scrollbar-color: #555 #1d1d1d;
+}

@@ -1,0 +1,20 @@
+.item-link {
+    text-decoration: none;
+    display: block;
+    border-radius: 8px;
+}
+
+.item-image {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 50%;
+    object-fit: cover;
+    border-radius: inherit;
+    transition: transform 0.3s ease;
+}
+
+.item-link:hover .item-image {
+    transform: scale(1.1);
+}
