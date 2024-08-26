@@ -159,7 +159,7 @@ const getRandomSong = async (ctx) => {
 
     const totalSongs = playlist.songs.length;
 
-    const nextIndex = (currentIndex + Math.floor(Math.random() * n) + 1) % totalSongs;
+    const nextIndex = (currentIndex + Math.floor(Math.random() * totalSongs) + 1) % totalSongs;
 
     const nextSongObjectId = playlist.songs[nextIndex];
 

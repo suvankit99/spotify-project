@@ -9,7 +9,8 @@ const AddPlaylist = () => {
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-
+  const apiUrl = process.env.REACT_APP_API_URL; // Use the environment variable for API URL
+  
   const handleFileUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -17,7 +18,7 @@ const AddPlaylist = () => {
     try {
       setUploading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/upload/",
+        `${apiUrl}/api/upload/`,
         formData,
         {
           headers: {
@@ -48,7 +49,7 @@ const AddPlaylist = () => {
     console.log("token = " , token) ; 
     console.log("form data", name, description, uploadedImagePath);
     try {
-      const response = await axios.post('http://localhost:5000/api/playlist', formData, {
+      const response = await axios.post(`${apiUrl}/api/playlist`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization':`Bearer ${token}`,

@@ -34,12 +34,14 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Playlist",
+      default:[]
     },
   ],
   recentlyListenedSongs : [
     {
       type:mongoose.Schema.Types.ObjectId , 
-      ref: "Song"
+      ref: "Song",
+      default:[]
     }
   ]
 });

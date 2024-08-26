@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function SignUp() {
   const navigate = useNavigate();
-  const [uploading, setUploading] = useState(false)
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -25,13 +25,14 @@ function SignUp() {
   const handleFileChange = (e) => {
     setProfilePicture(e.target.files[0]);
   };
+
   const handleFileUpload = async () => {
     const formData = new FormData();
     formData.append("file", profilePicture);
     try {
       setUploading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/upload/",
+        `${process.env.REACT_APP_API_URL}/api/upload/`,
         formData,
         {
           headers: {
@@ -44,27 +45,74 @@ function SignUp() {
     } catch (error) {
       setUploading(false);
       console.error("Error uploading file to server", error);
+      toast.error("Error in uploading profile picture", {
+        position: 'top-right'
+      });
       return null;
     }
   };
+
+  const validateForm = () => {
+    const { username, email, password, confirmPassword } = formData;
+    if (!username) {
+      toast.error("Username is required", {
+        position: "top-right"
+      });
+      return false;
+    }
+    if (!email) {
+      toast.error("Email is required", {
+        position: "top-right"
+      });
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email format", {
+        position: "top-right"
+      });
+      return false;
+    }
+    if (!password) {
+      toast.error("Password is required", {
+        position: "top-right"
+      });
+      return false;
+    }
+    if (password.length < 6) {
+      toast.error("Password should be at least 6 characters long", {
+        position: "top-right"
+      });
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Password and confirm password fields do not match", {
+        position: "top-right"
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const imageURL = await handleFileUpload() ; 
-    console.log("Uploaded image url" , imageURL) ; 
-    console.log('Form Data:', formData);
+    if (!validateForm()) {
+      return;
+    }
+
+    const imageURL = profilePicture ? await handleFileUpload() : null;
     const data = new FormData();
     data.append('username', formData.username);
     data.append('email', formData.email);
     data.append('password', formData.password);
-    data.append('confirmPassword', formData.confirmPassword);
     data.append('role', formData.role);
-    if (profilePicture) {
+    if (imageURL) {
       data.append('profilePicture', imageURL);
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/signup/', data, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/signup/`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -78,7 +126,9 @@ function SignUp() {
       console.log(response.data);
     } catch (error) {
       console.error('Error creating user:', error);
-      toast.error('Error creating user');
+      toast.error('Error creating user', {
+        position: "top-right"
+      });
     }
   };
 

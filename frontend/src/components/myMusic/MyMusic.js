@@ -24,12 +24,13 @@ function MyMusic() {
   const [language, setLanguage] = useState("");
   const [userPlaylists, setUserPlaylists] = useState([]);
   const token = localStorage.getItem("token");
+  const apiUrl = process.env.REACT_APP_API_URL; // Use the environment variable for API URL
 
   useEffect(() => {
     const fetchOwnerPlaylists = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/playlist/owner/${loggedUser._id}`
+          `${apiUrl}/api/playlist/owner/${loggedUser._id}`
         );
         console.log("logged user playlists", response.data);
         setUserPlaylists(response.data);
@@ -44,7 +45,7 @@ function MyMusic() {
   useEffect(() => {
     const fetchUploadedSongs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/artist/${loggedUser._id}`) ; 
+        const response = await axios.get(`${apiUrl}/api/artist/${loggedUser._id}`) ; 
         console.log("Uploaded songs : " , response.data.songs)
         setUploadedSongs(response.data.songs) ; 
       } catch (error) {
@@ -73,7 +74,7 @@ function MyMusic() {
     try {
       setUploading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/upload/",
+        `${apiUrl}/api/upload/`,
         formData,
         {
           headers: {
@@ -97,7 +98,7 @@ function MyMusic() {
   const sendSongData = async (songData) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/song/",
+        `${apiUrl}/api/song/`,
         songData,
         {
           headers: {
@@ -152,7 +153,7 @@ function MyMusic() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/playlist/",
+        `${apiUrl}/api/playlist/`,
         data,
         {
           headers: {

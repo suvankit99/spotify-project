@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   FaPlay,
   FaPause,
@@ -25,6 +25,8 @@ const PlayerControls = () => {
   const selectedSong = useSelector((state) => state.song.selectedSong);
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
     if (isPlaying) {
@@ -56,8 +58,6 @@ const PlayerControls = () => {
     if (!isNaN(newTime)) {
       audioRef.current.currentTime = newTime;
     }
-    console.log("newTime" , newTime) ; 
-    console.log("current time" , audioRef.current.currentTime) ;  
   };
 
   const handleNext = async () => {
@@ -67,7 +67,7 @@ const PlayerControls = () => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/song/next",
+        `${apiUrl}/api/song/next`,
         selectedSong,
         {
           headers: {
@@ -77,6 +77,7 @@ const PlayerControls = () => {
         }
       );
       dispatch(setSelectedSong(response.data));
+      audioRef.current.currentTime = 0; 
     } catch (error) {
       console.error(error.message);
     }
@@ -89,16 +90,17 @@ const PlayerControls = () => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/song/previous",
+        `${apiUrl}/api/song/previous`,
         selectedSong,
         {
           headers: {
             "Content-Type": "application/json",
-              'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`
           },
         }
       );
-      dispatch(setSelectedSong(response.data)); 
+      dispatch(setSelectedSong(response.data));
+      audioRef.current.currentTime = 0; 
     } catch (error) {
       console.error(error.message);
     }
@@ -112,21 +114,22 @@ const PlayerControls = () => {
   const handleRandomSong = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/song/random",
+        `${apiUrl}/api/song/random`,
         selectedSong,
         {
           headers: {
             "Content-Type": "application/json",
-              'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`
           },
         }
       );
       dispatch(setSelectedSong(response.data));
+      audioRef.current.currentTime = 0; 
     } catch (error) {
       console.error(error.message);
     }
   };
-  
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.addEventListener("timeupdate", handleTimeUpdate);
@@ -167,7 +170,6 @@ const PlayerControls = () => {
         />
         <div className="song-info">
           <h3>{selectedSong ? selectedSong.name : 'No song selected'}</h3>
-          <p>Artist name</p>
         </div>
       </div>
       <div className="mid-section">
@@ -226,7 +228,6 @@ const PlayerControls = () => {
           aria-labelledby="continuous-slider"
           style={{ width: 100, marginLeft: "1vw", marginRight: "1vw" }}
         />
-        <FaExpand className="control-icon" />
       </div>
     </div>
   );

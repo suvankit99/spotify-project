@@ -4,11 +4,31 @@ const { generateToken } = require("./authController");
 
 const getFileName = (fullPath) => fullPath.split("/").pop();
 
-// Handler function to add a user
 const addUser = async (ctx) => {
   const { username, email, password, role, profilePicture } = ctx.request.body;
-  const encryptedPassword = await hashPassword(password);
+  const missingFields = [];
+
+  // Check which fields are missing and add them to the missingFields array
+  if (!username) missingFields.push("username");
+  if (!email) missingFields.push("email");
+  if (!password) missingFields.push("password");
+  if (!role) missingFields.push("role");
+  if (!profilePicture) missingFields.push("profilePicture");
+
+  // If there are missing fields, return an error message
+  if (missingFields.length > 0) {
+    ctx.status = 400;
+    ctx.body = {
+      message: "Missing required fields",
+      missingFields: missingFields.join(", "),
+    };
+    return;
+  }
+
   try {
+    // Encrypt the password before saving
+    const encryptedPassword = await hashPassword(password);
+
     const newUser = new User({
       username: username,
       email: email,
@@ -16,6 +36,7 @@ const addUser = async (ctx) => {
       role: role,
       profilePicture: `http://localhost:5000/${getFileName(profilePicture)}`,
     });
+
     await newUser.save();
     ctx.body = { message: "User created successfully", user: newUser };
   } catch (error) {
@@ -23,6 +44,7 @@ const addUser = async (ctx) => {
     ctx.body = { message: "Error creating user", error };
   }
 };
+
 
 const authUser = async (ctx) => {
   const { email, password } = ctx.request.body;
@@ -34,9 +56,9 @@ const authUser = async (ctx) => {
     const correctPassword = foundUser.password;
     const passwordMatch = await verifyPassword(password, correctPassword);
     if (!passwordMatch) {
-      throw new Error("Incorrect password");
+      throw new Error("Incorrect credentials provided");
     }
-
+    
     const token = generateToken(foundUser);
 
     ctx.body = {

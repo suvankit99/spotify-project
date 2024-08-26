@@ -55,4 +55,43 @@ const checkFollowing = async ( ctx ) => {
     }
   }
 }
-module.exports = { addFollower , checkFollowing};
+
+// Function to get followers
+const getFollowers = async (ctx) => {
+  const userId = ctx.request.params.userId;
+
+  try {
+    const followers = await Follower.find({ followeeId: userId , following:true})
+      .populate('followerId', '-password') // Populate followerId and exclude password
+      .exec();
+
+    // Extract user details from populated followerId
+    const result = followers.map(follow => follow.followerId);
+
+    ctx.body = result;
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { error: 'An error occurred while fetching followers' };
+  }
+};
+
+// Function to get following
+const getFollowing = async (ctx) => {
+  const userId = ctx.request.params.userId;
+
+  try {
+    const following = await Follower.find({ followerId: userId , following:true})
+      .populate('followeeId', '-password') // Populate followeeId and exclude password
+      .exec();
+
+    // Extract user details from populated followeeId
+    const result = following.map(follow => follow.followeeId);
+
+    ctx.body = result;
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { error: 'An error occurred while fetching following' };
+  }
+};
+
+module.exports = { getFollowers , getFollowing , addFollower , checkFollowing};

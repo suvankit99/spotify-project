@@ -6,6 +6,9 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Switch from "@mui/material/Switch";
 
+// Access the API URL from environment variables
+const API_URL = process.env.REACT_APP_API_URL;
+
 const UserLibrary = () => {
   const [playlists, setPlaylists] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -18,33 +21,22 @@ const UserLibrary = () => {
   const loggedUser = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const [likedSongs, setlikedSongs] = useState([]);
+
   useEffect(() => {
     const fetchPlaylists = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/playlist/owner/${loggedUser._id}`
-        );
+        const res = await axios.get(`${API_URL}/api/playlist/owner/${loggedUser._id}`);
         setPlaylists(res.data);
         console.log("user playlists", res.data);
       } catch (err) {
         console.error("Error fetching playlists:", err);
+        toast.error("Failed to fetch playlists.", { position: "top-right" });
       }
     };
-    const fetchLikedSongs = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/likedSongs/${loggedUser._id}`
-        );
-        setlikedSongs(response.data);
-        
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (loggedUser) {
+
+
+    if (isLoggedIn) {
       fetchPlaylists();
-      fetchLikedSongs();
     }
   }, [loggedUser]);
 
@@ -53,53 +45,70 @@ const UserLibrary = () => {
     formData.append("file", file);
     try {
       setUploading(true);
-      const response = await axios.post(
-        "http://localhost:5000/api/upload/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}/api/upload/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUploading(false);
       return response.data.file;
     } catch (error) {
       setUploading(false);
       console.error("Error uploading file to server", error);
+      toast.error("Failed to upload image.", { position: "top-right" });
       return null;
     }
   };
 
+  const validateForm = () => {
+    let isValid = true;
+
+    if (!name.trim()) {
+      toast.error("Playlist name is required.", { position: "top-right" });
+      isValid = false;
+    }
+
+    if (!description.trim()) {
+      toast.error("Playlist description is required.", { position: "top-right" });
+      isValid = false;
+    }
+
+    if (!image) {
+      toast.error("Image is required.", { position: "top-right" });
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+
     const uploadedImagePath = await handleFileUpload(image);
-    console.log("Uploaded image Path", uploadedImagePath);
+    if (!uploadedImagePath) {
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
     formData.append("imagePath", uploadedImagePath);
     formData.append("owner", loggedUser._id);
+
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/playlist",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response.data);
-      toast.success("Playlist created successfully", {
-        position: "top-right",
+      const response = await axios.post(`${API_URL}/api/playlist`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
+      toast.success("Playlist created successfully", { position: "top-right" });
       // Refresh playlists
-      const res = await axios.get(
-        `http://localhost:5000/api/playlist/owner/${loggedUser._id}`
-      );
+      const res = await axios.get(`${API_URL}/api/playlist/owner/${loggedUser._id}`);
       setPlaylists(res.data);
       setShowForm(false);
       setImage(null);
@@ -107,9 +116,7 @@ const UserLibrary = () => {
       setDescription("");
     } catch (error) {
       console.error("Error adding playlist:", error);
-      toast.error(error.message, {
-        position: "top-right",
-      });
+      toast.error("Failed to create playlist.", { position: "top-right" });
     }
   };
 
@@ -119,20 +126,14 @@ const UserLibrary = () => {
   };
 
   const handleSwitchChange = async (event, playlist) => {
-    // Implement the logic to handle the switch toggle here
     const playlistId = playlist._id;
-    const token = localStorage.getItem("token");
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/playlist/toggle/${playlist._id}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.put(`${API_URL}/api/playlist/toggle/${playlist._id}`, {}, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setPlaylists((prevPlaylists) =>
         prevPlaylists.map((pl) =>
           pl._id === playlistId ? { ...pl, isPublic: !pl.isPublic } : pl
@@ -140,19 +141,19 @@ const UserLibrary = () => {
       );
       console.log(response.data);
     } catch (error) {
-      console.error(error.message);
+      console.error("Error toggling playlist visibility:", error);
+      toast.error("Failed to toggle playlist visibility.", { position: "top-right" });
     }
   };
+
   const handlePlusIconClick = () => {
     if (!isLoggedIn) {
-      toast.info("Please login to create playlists", {
-        position: "top-right",
-        theme: "dark",
-      });
+      toast.info("Please login to create playlists", { position: "top-right", theme: "dark" });
       return;
     }
     setShowForm(true);
   };
+
   return (
     <div className="user-library">
       <div className="section">
@@ -205,10 +206,9 @@ const UserLibrary = () => {
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-              ></input>
+              />
             </label>
             <button type="submit">Create Playlist</button>
-            <ToastContainer />
           </form>
         )}
       </div>

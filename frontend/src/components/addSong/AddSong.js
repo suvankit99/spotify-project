@@ -22,10 +22,11 @@ const AddSong = () => {
   const [uploadedSongId, setuploadedSongId] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [selectedGenres, setSelectedGenres] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL; // Use the environment variable for API URL
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/playlist/")
+      .get(`${apiUrl}/api/playlist/`)
       .then((response) => {
         setPlaylists(response.data.playlists);
         console.log(response.data.playlists);
@@ -39,7 +40,7 @@ const AddSong = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/playlist/",
+        `${apiUrl}/api/playlist/`,
         data,
         {
           headers: {
@@ -49,7 +50,9 @@ const AddSong = () => {
         }
       );
       console.log("Song added to playlist successfully", response.data);
+      toast.success("Song added to playlist successfully" , {position:"top-right"})
     } catch (error) {
+      toast.error(error.message , {position : 'top-right'})
       console.error("Failed to add song to playlist", error);
     }
   };
@@ -57,7 +60,7 @@ const AddSong = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/song/",
+        `${apiUrl}/api/song/`,
         JSON.stringify(data),
         {
           headers: {
@@ -90,7 +93,7 @@ const AddSong = () => {
     try {
       setUploading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/upload/",
+        `${apiUrl}/api/upload/`,
         formData,
         {
           headers: {

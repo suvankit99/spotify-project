@@ -10,12 +10,13 @@ const AllPlaylists = () => {
   const [hasMore, setHasMore] = useState(true);
   const playlistsContainerRef = useRef(null);
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL; // Use the environment variable for API URL
 
   useEffect(() => {
     const fetchPlaylists = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/playlist/${page}/${8}`);
+        const res = await axios.get(`${apiUrl}/api/playlist/${page}/${8}`);
         const newPlaylists = res.data.playlists;
         console.log('New playlists fetched' , newPlaylists);
         setPlaylists((prevPlaylists) => [...prevPlaylists, ...newPlaylists]);

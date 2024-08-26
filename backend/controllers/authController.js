@@ -40,6 +40,34 @@ const authMiddleware = async (ctx, next) => {
     return;
   }
   const token = authHeader.replace("Bearer ", "");
+  try {
+    // Verify the token using the secret key
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const role = decoded.role ; 
+    if(role === 'admin'){
+      await next()
+    }
+    else{
+      throw Error('This route is inaccessble for current user') ; 
+    }
+    
+  } catch (error) {
+    // If token is invalid or expired
+    return {
+      valid: false,
+      error: error.message,
+    };
+  }
+};
+
+const checkAdmin = async () => {
+  const authHeader = ctx.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    ctx.status = 401;
+    ctx.body = { error: "No token provided" };
+    return;
+  }
+  const token = authHeader.replace("Bearer ", "");
   const result = verifyToken(token);
   if (!result.valid) {
     ctx.status = 401;
@@ -47,6 +75,6 @@ const authMiddleware = async (ctx, next) => {
     return;
   }
   await next();
-};
+}
 
-module.exports = { generateToken , verifyToken , authMiddleware};
+module.exports = { generateToken , verifyToken , authMiddleware , checkAdmin};

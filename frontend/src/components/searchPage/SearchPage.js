@@ -10,6 +10,7 @@ import SongsByGenre from "../songsByGenre/SongsByGenre";
 
 const SearchPage = () => {
   const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearchInput, setDebouncedSearchInput] = useState("");
   const [results, setResults] = useState({
     artists: [],
     listeners: [],
@@ -18,14 +19,26 @@ const SearchPage = () => {
   });
   const [selectedFilter, setSelectedFilter] = useState("All");
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
   useEffect(() => {
-    if (searchInput) {
+    // Set a timer to update the debounced search input
+    const timerId = setTimeout(() => {
+      setDebouncedSearchInput(searchInput);
+    }, 500); // Delay of 500ms
+
+    // Clear the timer if input changes before the timer ends
+    return () => clearTimeout(timerId);
+  }, [searchInput]);
+
+  useEffect(() => {
+    if (debouncedSearchInput) { 
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/search/${searchInput}/${selectedFilter}`
+            `http://localhost:5000/api/search/${debouncedSearchInput}/${selectedFilter}`
           );
           setResults(response.data);
+          console.log("Search api called" , response.data);
         } catch (error) {
           console.error("Error fetching search results:", error);
         }
@@ -34,7 +47,7 @@ const SearchPage = () => {
     } else {
       setResults({ artists: [], listeners: [], songs: [], playlists: [] });
     }
-  }, [searchInput, selectedFilter]);
+  }, [debouncedSearchInput, selectedFilter]);
 
   const filters = ["All", "Artists", "Songs", "Playlists", "Listeners"];
 
@@ -72,7 +85,6 @@ const SearchPage = () => {
 
       {isLoggedIn && !searchInput && <SongsByGenre />}
 
-      
       <div className="search__results">
         {(selectedFilter === "All" || selectedFilter === "Artists") &&
           results.artists.length > 0 && (

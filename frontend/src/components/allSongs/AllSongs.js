@@ -20,6 +20,7 @@ const AllSongs = () => {
   const selectedSong = useSelector(state => state.selectedSong) ; 
   const [loggedUserPlaylists, setLoggedUserPlaylists] = useState([]);
   const [showDropdown, setShowDropdown] = useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL; // Use the environment variable for API URL
 
   const mainContentRef = useRef(null); // Create a ref to reference the scrollable component
 
@@ -27,7 +28,7 @@ const AllSongs = () => {
     const fetchSongs = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/song/${page}/8`);
+        const res = await axios.get(`${apiUrl}/api/song/${page}/8`);
         const newSongs = res.data.songs;
         console.log("new songs fetched" , newSongs) ;
         setSongs((prevSongs) => [...prevSongs, ...newSongs]);
@@ -46,7 +47,7 @@ const AllSongs = () => {
     const fetchLoggedUserPlaylists = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/playlist/owner/${loggedUser._id}`
+          `${apiUrl}/api/playlist/owner/${loggedUser._id}`
         );
         setLoggedUserPlaylists(res.data);
       } catch (error) {
@@ -95,7 +96,7 @@ const AllSongs = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/frequent-genre`,
+        `${apiUrl}/api/frequent-genre`,
         data,
         {
           headers: {
@@ -117,7 +118,7 @@ const AllSongs = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/playlist/",
+        `${apiUrl}/api/playlist/`,
         data,
         {
           headers: {
@@ -155,7 +156,7 @@ const AllSongs = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/user/recent",
+        `${apiUrl}/api/user/recent`,
         formData,
         {
           headers: {

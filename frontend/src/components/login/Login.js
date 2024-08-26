@@ -7,6 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from 'react-redux';
 import { setUser } from "../../redux/userSlice";
 
+// Access the API URL from environment variables
+const API_URL = process.env.REACT_APP_API_URL;
+
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -25,39 +28,61 @@ function Login() {
     });
   };
 
+  const validateForm = () => {
+    const { email, password } = formData;
+    let isValid = true;
+
+    if (!email) {
+      toast.error("Email is required", { position: "top-right" });
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      toast.error("Email is invalid", { position: "top-right" });
+      isValid = false;
+    }
+
+    if (!password) {
+      toast.error("Password is required", { position: "top-right" });
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
+    
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/login/",
+        `${API_URL}/api/login/`,  // Use the environment variable here
         formData
       );
       console.log("Response:", response.data);
 
       if (response.data.error) {
-        // Handle login error (e.g., show error message to user)
-        toast.error(response.data.error , {
-          position:"top-right",
-        })
+        toast.error(response.data.error, {
+          position: "top-right",
+        });
         console.error("Login Error:", response.data.error);
       } else {
-        // Handle successful login (e.g., store user data, redirect)
         toast.success('Login Successful!', {
-          position:"top-right",
+          position: "top-right",
         });
         setTimeout(() => {
-           navigate("/");
+          navigate("/");
         }, 5000);
-       
+
         dispatch(setUser(response.data.foundUser));
-        localStorage.setItem('token' , response.data.token) ; 
-        console.log(response.data.foundUser) ; 
-        console.log("Login Successful:", response.data);
+        localStorage.setItem('token', response.data.token);
       }
     } catch (error) {
       console.error("Error during login:", error);
+      toast.error("An unexpected error occurred. Please try again later.", {
+        position: "top-right",
+      });
     }
   };
 
@@ -71,7 +96,7 @@ function Login() {
         />
         <h2>Log In to Spotify</h2>
         <div className="login__inputContainer">
-          <label>Email </label>
+          <label>Email</label>
           <input
             type="email"
             name="email"
@@ -90,29 +115,16 @@ function Login() {
             onChange={handleChange}
           />
         </div>
-        <div className="login__rememberMe">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            name="rememberMe"
-            checked={formData.rememberMe}
-            onChange={handleChange}
-          />
-          <label htmlFor="rememberMe">Remember me</label>
-        </div>
         <button className="login__button" type="submit">
           Log In
         </button>
-        <a href="/" className="login__forgotPassword">
-          Forgot your password?
-        </a>
         <div className="login__signup">
           <span>
             Don't have an account? <a href="/signup">Sign up for Spotify</a>.
           </span>
         </div>
       </form>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 }

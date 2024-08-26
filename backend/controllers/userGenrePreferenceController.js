@@ -55,9 +55,9 @@ const getSongRecommendations = async (ctx) => {
       for (const genre of genres) {
         const songs = await Song.aggregate([
           { $match: { genre: { $in: [genre] } } }, // Match songs with the current genre
-          { $sample: { size: 3 } }, // Randomly pick 3 songs
+          { $sample: { size: 4 } }, // Randomly pick 3 songs
         ]);
-  
+
         recommendedSongs[genre] = songs;
       }
   

@@ -25,25 +25,32 @@ const SinglePlaylist = () => {
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const token = localStorage.getItem("token");
   const playlistSongsRef = useRef(null);
+  const apiUrl = process.env.REACT_APP_API_URL; // Use the environment variable for API URL
 
   useEffect(() => {
     const fetchPlaylist = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/playlist/${id}`);
+        const res = await axios.get(`${apiUrl}/api/playlist/${id}`);
         setPlaylistData(res.data);
       } catch (error) {
         console.error("Error fetching playlist:", error);
+        toast.error('Could not fetch currently viewed playlist' , {
+          position:'top-right'
+        })
       }
     };
 
     const fetchLoggedUserPlaylists = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/playlist/owner/${loggedUser._id}`
+          `${apiUrl}/api/playlist/owner/${loggedUser._id}`
         );
         setLoggedUserPlaylists(res.data);
       } catch (error) {
         console.error("Error fetching logged user playlists:", error);
+        toast.error('Could not fetch logged user playlists' , {
+          position:'top-right'
+        })
       }
     };
 
@@ -55,13 +62,16 @@ const SinglePlaylist = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/playlist/${id}/${page}/${8}`
+        `${apiUrl}/api/playlist/${id}/${page}/${8}`
       );
       const newSongs = res.data.songs;
       setSongs((prevSongs) => [...prevSongs, ...newSongs]);
       setHasMore(newSongs.length > 0);
     } catch (error) {
       console.error("Error fetching songs:", error);
+      toast.error('Could not fetch songs' , {
+        position:'top-right'
+      })
     } finally {
       setLoading(false);
     }
@@ -140,7 +150,7 @@ const SinglePlaylist = () => {
 
     console.log(data) ; 
     try {
-      const response = await axios.put("http://localhost:5000/api/likedSongs", data, {
+      const response = await axios.put(`${apiUrl}/api/likedSongs`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -172,7 +182,7 @@ const SinglePlaylist = () => {
     };
 
     try {
-      await axios.put("http://localhost:5000/api/playlist/", data, {
+      await axios.put(`${apiUrl}/api/playlist/`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -203,7 +213,7 @@ const SinglePlaylist = () => {
 
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/user/recent",
+        `${apiUrl}/api/user/recent`,
         formData,
         {
           headers: {
@@ -215,6 +225,9 @@ const SinglePlaylist = () => {
       console.log("Updated recently listened songs", response.data);
     } catch (error) {
       console.error(error);
+      toast.error('Could not update recently listened songs' , {
+        position:'top-right'
+      })
     }
   };
 
@@ -230,7 +243,7 @@ const SinglePlaylist = () => {
     formData.append('playlistId' , id) ; 
     formData.append('owner' , loggedUser._id) ; 
     try {
-      const response = await axios.put(`http://localhost:5000/api/playlist/remove-song` , formData , {
+      const response = await axios.put(`${apiUrl}/api/playlist/remove-song` , formData , {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -240,6 +253,9 @@ const SinglePlaylist = () => {
       fetchSongs() ;                              
     } catch (error) {
       console.error(error) ; 
+      toast.error('Could not remove song' , {
+        position:'top-right'
+      })
     }
   }
 
@@ -251,7 +267,7 @@ const SinglePlaylist = () => {
     }
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/frequent-genre` , data , {
+      const response = await axios.put(`${apiUrl}/api/frequent-genre` , data , {
         headers: {
           'Content-Type':'application/json'
         }
@@ -259,6 +275,9 @@ const SinglePlaylist = () => {
       console.log("updated frequently listened genres " ,response.data) ; 
     } catch (error) {
       console.error(error) ; 
+      toast.error('Could not update frequently litened genres' , {
+        position:'top-right'
+      })
     }
   }
   useEffect(() => {
@@ -333,16 +352,18 @@ const SinglePlaylist = () => {
                           >
                             Add to playlist
                           </li>
-                          <li onClick={() => handleSongRemoval(song)}>
-                            Remove song from this playlist
-                          </li>
+                         {
+                          (loggedUser._id === playlistData.owner) &&  <li onClick={() => handleSongRemoval(song)}>
+                          Remove song from this playlist
+                        </li>
+                         }
                         </ul>
                         {showPlaylistDropdown === song._id && (
                           <div className="playlist-dropdown">
                             <ul>
                               {loggedUserPlaylists.length > 0 ? (
                                 loggedUserPlaylists.map((pl) => (
-                                  <li
+                                  pl.name !== 'Liked Songs' && <li
                                     key={pl._id}
                                     onClick={() => handleAddSongToPlaylist(pl)}
                                   >

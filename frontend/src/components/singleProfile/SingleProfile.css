@@ -8,6 +8,7 @@
   border-radius: 1vh;
   margin-right: 1vh;
   overflow-y: auto; /* Enables vertical scrolling */
+  position: relative; /* Required for scrollbar styling */
 }
 
 /* Custom scrollbar styles */

@@ -13,10 +13,12 @@ const { addSong, fetchSongs, getNextSong, getPreviousSong, getRandomSong, getSon
 const app = new Koa();
 const router = new Router();
 const {addPlaylist, fetchPlaylists, addSongToPlaylist, fetchSinglePlaylist, fetchPlaylistsOfOwner, togglePlaylistVisibility, getPublicPlaylistsByUserId, getPaginatedPlaylists, getPaginatedSongsOfSinglePlaylist, addSongToLikedSongs, removeSongFromPlaylist} = require('./controllers/playlistControllers');
-const { addFollower,checkFollowing } = require('./controllers/followerController');
+const { addFollower,checkFollowing, getFriends, getFollowers, getFollowing } = require('./controllers/followerController');
 const { getSearchResults } = require('./controllers/searchController');
-const { authMiddleware } = require('./controllers/authController') ; 
+const { authMiddleware, checkAdmin } = require('./controllers/authController') ; 
 const { updateUserFrequentGenres, getSongRecommendations } = require('./controllers/userGenrePreferenceController');
+const http = require('http'); // Import http module
+const { Server } = require('socket.io'); // Import socket.io
 
 // // Connect to DB
 connectToDatabase();
@@ -34,22 +36,16 @@ app.use(koaBody({
 // // Handle CORS errors
 app.use(cors());
 
-// POST route for /api/login/
-router.post('/api/login/', authUser);
-
-// POST route for /api/signup/
-router.post('/api/signup/', addUser);
-
 // song routes
 router.post('/api/song/' , addSong) ; 
 
 router.get('/api/song/' , fetchSongs) ;
 
-router.post('/api/song/next' , authMiddleware , getNextSong) ; 
+router.post('/api/song/next' ,  getNextSong) ; 
 
-router.post('/api/song/previous' , authMiddleware, getPreviousSong) ; 
+router.post('/api/song/previous' ,  getPreviousSong) ; 
 
-router.post('/api/song/random', authMiddleware , getRandomSong);
+router.post('/api/song/random',  getRandomSong);
 
 router.get('/api/song/genre/:type/:name' , getSongsByGenre) ; 
 
@@ -59,17 +55,12 @@ router.get('/api/song/:page/:limit' , getPaginatedSongs) ;
 
 router.get('/api/artist/:artistId' , fetchSongsByArtist); 
 
-// Test route
-router.get("/", (ctx) => {
-  ctx.body = 'Hello world';
-});
-
 // playlist routes 
-router.post('/api/playlist' , authMiddleware , addPlaylist) ; 
+router.post('/api/playlist' , addPlaylist) ; 
 
 router.get('/api/playlist' , fetchPlaylists) ; 
 
-router.put('/api/playlist', authMiddleware , addSongToPlaylist);
+router.put('/api/playlist', addSongToPlaylist);
 
 router.get('/api/playlist/:id' , fetchSinglePlaylist) ; 
 
@@ -77,7 +68,7 @@ router.get('/api/playlist/:playlistId/:page/:limit' , getPaginatedSongsOfSingleP
 
 router.get('/api/playlist/owner/:id',  fetchPlaylistsOfOwner);
 
-router.put('/api/playlist/toggle/:playlistId', authMiddleware , togglePlaylistVisibility);
+router.put('/api/playlist/toggle/:playlistId', togglePlaylistVisibility);
 
 router.get('/api/playlist/public/:id' , getPublicPlaylistsByUserId);
 
@@ -89,13 +80,21 @@ router.put('/api/playlist/remove-song' , removeSongFromPlaylist)
 
 router.get('/api/user/:id' , getUserById)
 
-router.put('/api/user/recent' , authMiddleware , updateUserRecentlyListened);
+router.put('/api/user/recent' , updateUserRecentlyListened);
+
+router.post('/api/login/', authUser);
+
+router.post('/api/signup/', addUser);
 
 // follower routes 
 
 router.put('/api/follow', addFollower) ; 
 
-router.post(`/api/follow/check`, authMiddleware , checkFollowing)
+router.post(`/api/follow/check`, checkFollowing);
+
+router.get('/api/followers/:userId' , getFollowers) ; 
+
+router.get('/api/following/:userId' , getFollowing) ; 
 
 // search routes
 
@@ -110,8 +109,6 @@ router.get('/api/frequent-genre/:userId' , getSongRecommendations) ;
 // liked songs routes 
 
 router.put('/api/likedSongs' , addSongToLikedSongs)
-
-// router.get('/api/likedSongs/:userId', getLikedSongsByUserId)
 
 // POST route for /api/upload/
 router.post('/api/upload/', async (ctx) => {
