@@ -24,16 +24,6 @@ const cloudinary = require('./utils/cloudinaryConfig'); // Import the Cloudinary
 // // Connect to DB
 connectToDatabase();
 
-// // Middleware to handle multipart form data (file uploads)
-// app.use(koaBody({ 
-//   json:true ,
-//   multipart: true,
-//   formidable: {
-//     uploadDir: path.join('/home/suvankitsahoo/Desktop/spotify project/backend/data/'), // Directory where files will be uploaded
-//     keepExtensions: true,
-//   }
-// }));
-
 // // Handle CORS errors
 app.use(cors({
   origin: '*', // Replace with your React app's URL
