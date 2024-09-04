@@ -9,10 +9,10 @@ const { connectToDatabase } = require('./utils/connectDB'); // Import the connec
 const { addUser, authUser, getUserById, updateUserRecentlyListened } = require('./controllers/userControllers');
 const path = require('path');
 const Song = require('./models/Song') ; 
-const { addSong, fetchSongs, getNextSong, getPreviousSong, getRandomSong, getSongsByGenre, getUserRecentlyListenedSongs, getPaginatedSongs, fetchSongsByArtist } = require('./controllers/songControllers');
+const { addSong, fetchSongs, getNextSong, getPreviousSong, getRandomSong, getSongsByGenre, getUserRecentlyListenedSongs, getPaginatedSongs, fetchSongsByArtist, deleteSongById } = require('./controllers/songControllers');
 const app = new Koa();
 const router = new Router();
-const {addPlaylist, fetchPlaylists, addSongToPlaylist, fetchSinglePlaylist, fetchPlaylistsOfOwner, togglePlaylistVisibility, getPublicPlaylistsByUserId, getPaginatedPlaylists, getPaginatedSongsOfSinglePlaylist, addSongToLikedSongs, removeSongFromPlaylist} = require('./controllers/playlistControllers');
+const {addPlaylist, fetchPlaylists, addSongToPlaylist, fetchSinglePlaylist, fetchPlaylistsOfOwner, togglePlaylistVisibility, getPublicPlaylistsByUserId, getPaginatedPlaylists, getPaginatedSongsOfSinglePlaylist, addSongToLikedSongs, removeSongFromPlaylist, deletePlaylistById} = require('./controllers/playlistControllers');
 const { addFollower,checkFollowing, getFriends, getFollowers, getFollowing } = require('./controllers/followerController');
 const { getSearchResults } = require('./controllers/searchController');
 const { authMiddleware, checkAdmin } = require('./controllers/authController') ; 
@@ -57,6 +57,7 @@ router.get('/api/song/:page/:limit' , getPaginatedSongs) ;
 
 router.get('/api/artist/:artistId' , fetchSongsByArtist); 
 
+router.delete('/api/song/:songId' , deleteSongById) ; 
 // playlist routes 
 router.post('/api/playlist' , addPlaylist) ; 
 
@@ -76,7 +77,9 @@ router.get('/api/playlist/public/:id' , getPublicPlaylistsByUserId);
 
 router.get('/api/playlist/:page/:limit' , getPaginatedPlaylists) ;
 
-router.put('/api/playlist/remove-song' , removeSongFromPlaylist)
+router.put('/api/playlist/remove-song' , removeSongFromPlaylist);
+
+router.delete('/api/playlist/:playlistId' , deletePlaylistById) ; 
 
 // user routes 
 

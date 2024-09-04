@@ -282,6 +282,30 @@ const removeSongFromPlaylist = async (ctx) => {
   }
 };
 
+const deletePlaylistById = async (ctx) => {
+  const { playlistId } = ctx.params; // Extract playlistId from the request parameters
+
+  try {
+    // Find the playlist by its ID and remove it
+    const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId);
+
+    if (!deletedPlaylist) {
+      // If no playlist is found, return a 404 Not Found status
+      ctx.status = 404;
+      ctx.body = { message: 'Playlist not found' };
+      return;
+    }
+
+    // If the playlist was successfully deleted, return a success message
+    ctx.status = 200;
+    ctx.body = { message: 'Playlist deleted successfully', playlist: deletedPlaylist };
+  } catch (error) {
+    // Handle any errors that occur during the deletion process
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+};
+
 module.exports = {
   getPaginatedSongsOfSinglePlaylist,
   getPaginatedPlaylists,
@@ -294,4 +318,5 @@ module.exports = {
   fetchPlaylistsOfOwner,
   addSongToLikedSongs,
   removeSongFromPlaylist,
+  deletePlaylistById
 };

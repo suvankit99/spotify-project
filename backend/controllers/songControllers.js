@@ -300,4 +300,36 @@ const fetchSongsByArtist = async (ctx) => {
   }
 };
 
-module.exports = {fetchSongsByArtist , getPaginatedSongs , addSong, fetchSongs, getNextSong, getPreviousSong , getRandomSong , getSongsByGenre , getUserRecentlyListenedSongs};
+const deleteSongById = async (ctx) => {
+  const { songId } = ctx.request.params; 
+
+  try {
+    // Ensure songId is a valid MongoDB ObjectId
+    if (!songId) {
+      ctx.status = 400;
+      ctx.body = { message: 'Song ID is required' };
+      return;
+    }
+
+    // Find and delete the song by ID
+    const result = await Song.findByIdAndDelete(songId);
+
+    if (!result) {
+      ctx.status = 404;
+      ctx.body = { message: 'Song not found' };
+      return;
+    }
+
+    // Successful deletion
+    ctx.status = 200;
+    ctx.body = { message: 'Song deleted successfully' };
+
+  } catch (error) {
+    console.error('Error deleting song:', error);
+    ctx.status = 500;
+    ctx.body = { message: 'Error deleting song. Please try again later.' };
+  }
+};
+
+
+module.exports = {deleteSongById ,fetchSongsByArtist , getPaginatedSongs , addSong, fetchSongs, getNextSong, getPreviousSong , getRandomSong , getSongsByGenre , getUserRecentlyListenedSongs};

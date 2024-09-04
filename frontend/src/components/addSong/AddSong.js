@@ -114,6 +114,13 @@ const AddSong = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(playlists.length === 0){
+      toast.error("Please create some playlists first" , {
+        position:"top-right"
+      })
+      return ;
+    }
     console.log("Form Data:", {
       songFile,
       imageFile,

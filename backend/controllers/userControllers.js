@@ -34,7 +34,7 @@ const addUser = async (ctx) => {
       email: email,
       password: encryptedPassword,
       role: role,
-      profilePicture: `http://localhost:5000/${getFileName(profilePicture)}`,
+      profilePicture: profilePicture,
     });
 
     await newUser.save();

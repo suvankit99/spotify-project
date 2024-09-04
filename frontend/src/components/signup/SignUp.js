@@ -4,10 +4,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../redux/userSlice';
 
 function SignUp() {
   const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -41,7 +44,7 @@ function SignUp() {
         }
       );
       setUploading(false);
-      return response.data.file;
+      return response.data.url;
     } catch (error) {
       setUploading(false);
       console.error("Error uploading file to server", error);
@@ -120,10 +123,11 @@ function SignUp() {
       toast.success('Registration Successful!', {
         type: "success",
       });
+      console.log(response.data);
+      dispatch(setUser(response.data.user));
       setTimeout(() => {
         navigate("/");
       }, 4000);
-      console.log(response.data);
     } catch (error) {
       console.error('Error creating user:', error);
       toast.error('Error creating user', {

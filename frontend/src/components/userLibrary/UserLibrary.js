@@ -52,7 +52,7 @@ const UserLibrary = () => {
         },
       });
       setUploading(false);
-      return response.data.file;
+      return response.data.url;
     } catch (error) {
       setUploading(false);
       console.error("Error uploading file to server", error);
@@ -169,12 +169,12 @@ const UserLibrary = () => {
               />
               <h3>{playlist.name}</h3>
               <p>{playlist.description}</p>
-              <Switch
+             <span style={{fontSize:"12px"}}> Private <Switch
                 size="small"
                 color="success"
                 checked={playlist.isPublic}
                 onChange={(e) => handleSwitchChange(e, playlist)}
-              />
+              /> Public </span>
             </div>
           ))}
         </div>

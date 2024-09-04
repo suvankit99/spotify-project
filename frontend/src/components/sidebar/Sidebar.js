@@ -6,8 +6,8 @@ import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import io from 'socket.io-client';
-import { FaPlus , FaCheck } from "react-icons/fa";
+import io from "socket.io-client";
+import { FaPlus, FaCheck } from "react-icons/fa";
 
 function Sidebar() {
   const loggedUser = useSelector((state) => state.user.userInfo);
@@ -33,11 +33,21 @@ function Sidebar() {
           <span>Library</span>
         </div>
       </Link>
-      {isLoggedIn && (loggedUser.role === "artist" || loggedUser.role === "admin") && (
-        <Link to={"/mymusic"}>
+      {isLoggedIn &&
+        (loggedUser.role === "artist" || loggedUser.role === "admin") && (
+          <Link to={"/mymusic"}>
+            <div className="home-sidebar__option">
+              <QueueMusicIcon />
+              <span>My Music</span>
+            </div>
+          </Link>
+        )}
+
+      {isLoggedIn && (
+        <Link to={"/room"}>
           <div className="home-sidebar__option">
-            <QueueMusicIcon />
-            <span>My Music</span>
+            <FaPlus />
+            <span>Create room</span>
           </div>
         </Link>
       )}
