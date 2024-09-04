@@ -28,7 +28,7 @@ const AddPlaylist = () => {
         }
       );
       setUploading(false);
-      return response.data.file;
+      return response.data.url;
     } catch (error) {
       setUploading(false);
       console.error("Error uploading file to server", error);
