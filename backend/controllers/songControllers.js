@@ -7,22 +7,27 @@ const User = require("../models/User");
 const addSong = async (ctx) => {
   const { songName, songDescription, songPath, imagePath, playlist , duration , genre , language} =
     ctx.request.body.data;
-  // Extract the filename from the full path
-  const getFileName = (fullPath) => fullPath.split("/").pop();
+
+    if(!songName || !songDescription || !songPath || !imagePath || !playlist || !duration || !genre || !language){
+      ctx.status = 500 ; 
+      ctx.body = {
+        error : "Missing fields"
+      }
+      return ; 
+    }
   const playlistId = new mongoose.Types.ObjectId(playlist);
   const artistId = ctx.request.body.data.artist
     ? new mongoose.Types.ObjectId(ctx.request.body.data.artist)
-    : new mongoose.Types.ObjectId();
+    : new mongoose.Types.ObjectId("66cb7fe5e849bc2edfff47ca");
 
-    console.log('Inside add song , artistId' , artistId);
   try {
     const newSong = new Song({
       name: songName,
       description: songDescription,
-      imagePath: `http://localhost:5000/${getFileName(imagePath)}`,
-      songPath: `http://localhost:5000/${getFileName(songPath)}`,
-      playlist: playlistId, // or use the provided playlist if it's meant to be used
-      artist: artistId, // Replace with actual artist ID if needed
+      imagePath: imagePath,
+      songPath: songPath,
+      playlist: playlistId,
+      artist: artistId,
       duration:duration,
       genre: genre , 
       language : language 

@@ -3,14 +3,13 @@ const mongoose = require("mongoose");
 
 const addPlaylist = async (ctx) => {
   const { name, description, imagePath } = ctx.request.body;
-  const getFileName = (fullPath) => fullPath.split("/").pop();
   let owner = ctx.request.body.owner;
-  if (!owner) owner = new mongoose.Types.ObjectId();
+  if (!owner) owner = new mongoose.Types.ObjectId("66cb7fe5e849bc2edfff47ca");
   try {
     const newPlaylist = new Playlist({
       name: name,
       description: description,
-      imagePath: `http://localhost:5000/${getFileName(imagePath)}`,
+      imagePath: imagePath,
       owner: owner,
       songs: [],
     });

@@ -19,22 +19,34 @@ const { authMiddleware, checkAdmin } = require('./controllers/authController') ;
 const { updateUserFrequentGenres, getSongRecommendations } = require('./controllers/userGenrePreferenceController');
 const http = require('http'); // Import http module
 const { Server } = require('socket.io'); // Import socket.io
+const cloudinary = require('./utils/cloudinaryConfig'); // Import the Cloudinary configuration
 
 // // Connect to DB
 connectToDatabase();
 
 // // Middleware to handle multipart form data (file uploads)
-app.use(koaBody({ 
-  json:true ,
-  multipart: true,
-  formidable: {
-    uploadDir: path.join('/home/suvankitsahoo/Desktop/spotify project/backend/data/'), // Directory where files will be uploaded
-    keepExtensions: true,
-  }
-}));
+// app.use(koaBody({ 
+//   json:true ,
+//   multipart: true,
+//   formidable: {
+//     uploadDir: path.join('/home/suvankitsahoo/Desktop/spotify project/backend/data/'), // Directory where files will be uploaded
+//     keepExtensions: true,
+//   }
+// }));
 
 // // Handle CORS errors
-app.use(cors());
+app.use(cors({
+  origin: '*', // Replace with your React app's URL
+  credentials: true, // Allow credentials like cookies to be sent
+}));
+
+app.use(koaBody({
+  multipart: true, // Enables multipart form data parsing
+  formidable: {
+    uploadDir: path.join('/home/suvankitsahoo/Desktop/spotify project/backend/uploads/'), // Directory where files will be temporarily stored
+    keepExtensions: true,   // Keep file extensions
+  },
+}));
 
 // song routes
 router.post('/api/song/' , addSong) ; 
@@ -113,7 +125,29 @@ router.put('/api/likedSongs' , addSongToLikedSongs)
 // POST route for /api/upload/
 router.post('/api/upload/', async (ctx) => {
   const file = ctx.request.files.file; // Assuming the input field name is 'file'
-  ctx.body = { message: 'File uploaded successfully', file: file.filepath };
+  // ctx.body = { message: 'File uploaded successfully', file: file.filepath };
+  try {
+    // const result = await cloudinary.uploader.upload(file.filepath);
+    const result = await cloudinary.uploader.upload(file.filepath, {
+      folder: 'spotify',
+      resource_type: 'auto', // Allows for both images and audio
+    });
+
+    const fs = require('fs');
+    fs.unlinkSync(file.filepath);
+
+    ctx.body = {
+      message: 'File uploaded successfully',
+      url: result.secure_url,
+    };
+  } catch (error) {
+    console.error(error);
+    ctx.status = 500;
+    ctx.body = {
+      message: 'Failed to upload file',
+    };
+  }
+
 });
 
 

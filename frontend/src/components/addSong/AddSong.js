@@ -103,7 +103,8 @@ const AddSong = () => {
         }
       );
       setUploading(false);
-      return response.data.file;
+      console.log("Inside file upload" , response.data);
+      return response.data.url;
     } catch (error) {
       setUploading(false);
       console.error("Error uploading file to server", error);
