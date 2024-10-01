@@ -14,7 +14,7 @@ import "./PlayerControls.css";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { setSelectedSong } from "../../redux/songSlice";
-
+import { toast, ToastContainer } from "react-toastify";
 const PlayerControls = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100); // Volume ranges from 0 to 100
@@ -24,10 +24,16 @@ const PlayerControls = () => {
   const audioRef = useRef(null);
   const selectedSong = useSelector((state) => state.song.selectedSong);
   const dispatch = useDispatch();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const togglePlayPause = () => {
+    if (!selectedSong) {
+      toast.info("Please select a song first", {
+        position: "top-right",
+      });
+      return;
+    }
     setIsPlaying(!isPlaying);
     if (isPlaying) {
       audioRef.current.pause();
@@ -61,6 +67,12 @@ const PlayerControls = () => {
   };
 
   const handleNext = async () => {
+    if (!selectedSong) {
+      toast.info("Please select a song first", {
+        position: "top-right",
+      });
+      return;
+    }
     if (random) {
       await handleRandomSong();
       return;
@@ -72,18 +84,24 @@ const PlayerControls = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       dispatch(setSelectedSong(response.data));
-      audioRef.current.currentTime = 0; 
+      audioRef.current.currentTime = 0;
     } catch (error) {
       console.error(error.message);
     }
   };
 
   const handlePrevious = async () => {
+    if (!selectedSong) {
+      toast.info("Please select a song first", {
+        position: "top-right",
+      });
+      return;
+    }
     if (random) {
       await handleRandomSong();
       return;
@@ -95,23 +113,35 @@ const PlayerControls = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       dispatch(setSelectedSong(response.data));
-      audioRef.current.currentTime = 0; 
+      audioRef.current.currentTime = 0;
     } catch (error) {
       console.error(error.message);
     }
   };
 
   const toggleRepeat = () => {
+    if (!selectedSong) {
+      toast.info("Please select a song first", {
+        position: "top-right",
+      });
+      return;
+    }
     setRepeat(!repeat);
     audioRef.current.loop = !repeat;
   };
 
   const handleRandomSong = async () => {
+    if (!selectedSong) {
+      toast.info("Please select a song first", {
+        position: "top-right",
+      });
+      return;
+    }
     try {
       const response = await axios.post(
         `${apiUrl}/api/song/random`,
@@ -119,12 +149,12 @@ const PlayerControls = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       dispatch(setSelectedSong(response.data));
-      audioRef.current.currentTime = 0; 
+      audioRef.current.currentTime = 0;
     } catch (error) {
       console.error(error.message);
     }
@@ -163,13 +193,15 @@ const PlayerControls = () => {
   return (
     <div className="song-player">
       <div className="left-section">
-        <img
-          src={selectedSong ? selectedSong.imagePath : ""}
-          alt="Album Art"
-          className="album-art"
-        />
+        {selectedSong && (
+          <img
+            src={selectedSong ? selectedSong.imagePath : ""}
+            alt="Album Art"
+            className="album-art"
+          />
+        )}
         <div className="song-info">
-          <h3>{selectedSong ? selectedSong.name : 'No song selected'}</h3>
+          <h3>{selectedSong ? selectedSong.name : "No song selected"}</h3>
         </div>
       </div>
       <div className="mid-section">
@@ -196,7 +228,11 @@ const PlayerControls = () => {
           />
         </div>
         <div className="progress-song-bar">
-          <audio ref={audioRef} src={selectedSong ? selectedSong.songPath : ""} preload="auto"></audio>
+          <audio
+            ref={audioRef}
+            src={selectedSong ? selectedSong.songPath : ""}
+            preload="auto"
+          ></audio>
           <div className="progress-bar">
             <span>
               {getMinutes(Math.floor(audioRef.current?.currentTime)) || "0"}:
@@ -229,6 +265,7 @@ const PlayerControls = () => {
           style={{ width: 100, marginLeft: "1vw", marginRight: "1vw" }}
         />
       </div>
+      <ToastContainer />
     </div>
   );
 };
